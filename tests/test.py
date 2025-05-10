@@ -4,44 +4,59 @@ from butterfree.transform.features import Feature, KeyFeature, TimestampFeature
 from butterfree.transform import FeatureSet
 from butterfree.clients import SparkClient
 from butterfree.constants import DataType
-from butterfull import NaiveBayes
-print(NaiveBayes)
+from butterfull import std, fillna_mean
+from pyspark.sql.functions import current_timestamp
+from pyspark.sql.types import StructType, StructField, StringType, IntegerType, DoubleType
 
 spark_client = SparkClient()
 
+schema = StructType([
+  StructField("student_id", StringType(), nullable=False),
+  StructField("age", IntegerType(), nullable=True),
+  StructField("gender", StringType(), nullable=True),
+  StructField("study_hours_per_day", DoubleType(), nullable=True),
+])
+
 file_reader = FileReader(
-                id="data1",
-                path="./data.csv",
+                id="student_habits",
+                path="./student_habits_performance.csv",
                 format="csv",
-                format_options={"header": "true"}
+                format_options={"header": "true" },
+                schema=schema
             )
 
-source = Source(readers=[file_reader], query="select * from data1")
+source = Source(readers=[file_reader], query="select * from student_habits")
 source_df = source.construct(spark_client)
+source_df = source_df.withColumn("timestamp", current_timestamp())
 print("Source")
 source_df.show()
 
 keys = [
     KeyFeature(
-        name="id",
-        description="Unique identificator",
-        dtype=DataType.BIGINT,
+        name="student_id",
+        description="Unique student identificator",
+        dtype=DataType.STRING
     )
 ]
 
-ts_feature = TimestampFeature(from_ms=True)
+ts_feature = TimestampFeature()
 
 features = [
     Feature(
-        name="col1",
-        description="First column",
-        dtype=DataType.FLOAT,
-        transformation=NaiveBayes
+        name="age",
+        description="Age of the student",
+        dtype=DataType.INTEGER
     ),
     Feature(
-        name="col2",
-        description="Second column",
-        dtype=DataType.FLOAT,
+        name="gender",
+        description="Gender of the student",
+        dtype=DataType.STRING
+    ),
+    Feature(
+        name="study_hours_per_day",
+        description="Study hours per day of the student",
+        dtype=DataType.DOUBLE,
+        transformation=[std(id_column="student_id"), fillna_mean(id_column="student_id")]
     ),
 ]
 
@@ -55,4 +70,5 @@ feature_set = FeatureSet(
 )
 
 feature_set_df = feature_set.construct(source_df, spark_client)
-print(feature_set_df.toPandas())
+feature_set_df.orderBy("student_id").show()
+feature_set_df.printSchema()
