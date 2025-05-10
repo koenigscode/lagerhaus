@@ -35,13 +35,13 @@ features = [
     Feature(
         name="col1",
         description="First column",
-        dtype=DataType.STRING,
+        dtype=DataType.FLOAT,
         transformation=NaiveBayes
     ),
     Feature(
         name="col2",
         description="Second column",
-        dtype=DataType.STRING,
+        dtype=DataType.FLOAT,
     ),
 ]
 
