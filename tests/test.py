@@ -2,9 +2,10 @@ from butterfree.extract import Source
 from butterfree.extract.readers import FileReader
 from butterfree.transform.features import Feature, KeyFeature, TimestampFeature
 from butterfree.transform import FeatureSet
-from butterfree.transform.transformations.h3_transform import H3HashTransform
 from butterfree.clients import SparkClient
 from butterfree.constants import DataType
+from butterfull import NaiveBayes
+print(NaiveBayes)
 
 spark_client = SparkClient()
 
@@ -35,6 +36,7 @@ features = [
         name="col1",
         description="First column",
         dtype=DataType.STRING,
+        transformation=NaiveBayes
     ),
     Feature(
         name="col2",
