@@ -3,22 +3,17 @@ import pandas as pd
 from .preprocessing import std
 
 
-class ColumnMetadata(BaseModel):
+class FeatureMetadata(BaseModel):
     description: str
     unique: bool = False
 
-class ColumnMetadataArgument(ColumnMetadata):
-    name: str  
-    version: int = 1
-
 
 class FeatureStore:
-    metadata: dict[str, dict[int, ColumnMetadata]]
+    metadata: dict[str, FeatureMetadata]
     df: pd.DataFrame
 
-    def __init__(self, metadata: list[ColumnMetadataArgument], df: pd.DataFrame):
-        self.metadata = {column.name: {column.version: ColumnMetadata(description=column.description, unique=column.unique) } for column in metadata }
-        
+    def __init__(self, metadata: dict[str, FeatureMetadata], df: pd.DataFrame):
+        self.metadata = metadata
 
         missing_cols = set(self.metadata.keys()) - set(df.columns)
         if missing_cols:

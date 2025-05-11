@@ -1,2 +1,2 @@
 from .preprocessing import *
-from .core import FeatureStore, ColumnMetadataArgument
+from .core import FeatureStore, FeatureView, FeatureMetadata
