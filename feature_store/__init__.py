@@ -1,2 +1,3 @@
 from .preprocessing import *
 from .core import FeatureStore, FeatureView, FeatureMetadata, ModelType
+from .stats import plot_distribution
