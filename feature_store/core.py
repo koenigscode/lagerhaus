@@ -1,7 +1,11 @@
 from pydantic import BaseModel
 import pandas as pd
-from .preprocessing import std
+from .preprocessing import std, fill_na
+from enum import Enum
 
+class ModelType(Enum):
+    LINEAR_REGRESSION = "LinearRegression"
+    DECISION_TREE = "DecisionTree"
 
 class FeatureMetadata(BaseModel):
     description: str
@@ -27,18 +31,21 @@ class FeatureStore:
 
 class FeatureView:
     feature_store: FeatureStore
-    model: str = None
+    model: ModelType = None
 
-    model_transformers = {"LinearRegression": [std]}
+    model_transformers = {ModelType.LINEAR_REGRESSION: [fill_na, std,], ModelType.DECISION_TREE: []}
 
     def __init__(self, feature_store, model) -> None:
-        if model not in self.model_transformers.keys() and model != None:
-            raise ValueError(f"Model '{model} is not supported")
+        if model not in self.model_transformers.keys() and model is not None:
+            raise ValueError(f"Model '{model}' is not supported")
         
         self.feature_store = feature_store
         self.model = model
     
     def get_all(self):
+        """
+        Returns the feature view as a DataFrame with all the transformations applied.
+        """
         df = self.feature_store.get_all()
         for transformer in self.model_transformers[self.model]:
             df = transformer(df)

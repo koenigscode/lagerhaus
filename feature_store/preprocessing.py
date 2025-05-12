@@ -1,11 +1,30 @@
 from sklearn.preprocessing import StandardScaler
 import pandas as pd
 
+def _get_numerical(df):
+    return df.select_dtypes(include = ['number'])
+
 def std(df):
-    numerical_columns = df.select_dtypes(include = ['number'])
+    numerical_columns = _get_numerical(df)
     scaler = StandardScaler()
     scaler.fit(numerical_columns)
     scaled_array = scaler.fit_transform(numerical_columns)
     numerical_columns_df = pd.DataFrame(scaled_array, columns=numerical_columns.columns, index=numerical_columns.index)
-    df.update(numerical_columns_df)
+    df.loc[:, numerical_columns.columns] = numerical_columns_df
+    return df
+
+# TODO: fill other values than numbers too?
+def fill_na(df, strategy="mean"):
+    df = df.copy()
+    numerical_columns = _get_numerical(df)
+
+    if strategy == "mean":
+        num_df = numerical_columns.fillna(numerical_columns.mean())
+    elif strategy == "median":
+        num_df = numerical_columns.fillna(numerical_columns.median())
+    elif strategy == "mode":
+        num_df = numerical_columns.fillna(numerical_columns.mode())
+    else:
+        raise ValueError(f"Invalid strategy: {strategy}")
+    df.loc[:, numerical_columns.columns] = num_df
     return df
