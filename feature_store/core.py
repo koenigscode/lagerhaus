@@ -1,15 +1,10 @@
 from pydantic import BaseModel
 import pandas as pd
-from .preprocessing import std, fill_na
-from enum import Enum
 
-class ModelType(Enum):
-    LINEAR_REGRESSION = "LinearRegression"
-    DECISION_TREE = "DecisionTree"
 
 class FeatureMetadata(BaseModel):
     description: str
-    unique: bool = False
+    categorical: bool = False
 
 
 class FeatureStore:
@@ -37,20 +32,16 @@ class FeatureView:
         feature_store: The FeatureStore to use.
         whitelist: A list of column names to include in the view.
                    If empty, include all columns from the FeatureStore.
-        model: The ML model. The View will use appropriate preprocessing transformations.
+        transformers: A list of functions to apply to the features.
     """
     feature_store: FeatureStore
-    model: ModelType = None
     whitelist: list[str] = None
-    model_transformers = {ModelType.LINEAR_REGRESSION: [fill_na, std,], ModelType.DECISION_TREE: []}
+    transformers = []
 
-    def __init__(self, feature_store: FeatureStore, whitelist: list[str] = None, model: ModelType = None) -> None:
-        if model not in self.model_transformers.keys() and model is not None:
-            raise ValueError(f"Model '{model}' is not supported")
-        
+    def __init__(self, feature_store: FeatureStore, whitelist: list[str] = None, transformers: [] = []) -> None:
         self.whitelist = whitelist
         self.feature_store = feature_store
-        self.model = model
+        self.transformers = transformers
     
     def get_all(self):
         """
@@ -60,7 +51,7 @@ class FeatureView:
         if self.whitelist is not None:
             df = df[self.whitelist]
 
-        for transformer in self.model_transformers[self.model]:
-            df = transformer(df)
+        for transformer in self.transformers:
+            df = transformer(feature_store=self.feature_store)
 
         return df
