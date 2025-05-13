@@ -52,6 +52,6 @@ class FeatureView:
             df = df[self.whitelist]
 
         for transformer in self.transformers:
-            df = transformer(feature_store=self.feature_store)
+            df = transformer(df, feature_store=self.feature_store)
 
         return df
