@@ -1,6 +1,5 @@
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
 import pandas as pd
-from sklearn.preprocessing import OneHotEncoder
 from sklearn.preprocessing import PowerTransformer
 from .helpers import apply_transformation
 from lagerhaus.featuremanagement import FeatureStore
@@ -40,3 +39,25 @@ def skew(df: pd.DataFrame, feature_store: FeatureStore):
     numerical_columns = feature_store.get_numerical_cols()
     pt = PowerTransformer()
     return apply_transformation(df, numerical_columns, pt.fit_transform)
+
+def remove_correlated_features(df: pd.DataFrame, feature_store: FeatureStore):
+    numerical_columns = feature_store.get_numerical_cols()
+    corr_matrix = df[numerical_columns].corr().abs()
+
+    # gets rid of duplicates, since the matrix has every correlation twice
+    upper = corr_matrix.where(
+        pd.np.triu(pd.np.ones(corr_matrix.shape), k=1).astype(bool)
+    )
+    threshold = 0.9
+    to_drop = [column for column in upper.columns if any(upper[column] > threshold)]
+    return df.drop(columns=to_drop)
+
+def remove_outliers(df: pd.DataFrame, feature_store: FeatureStore, contamination=0.05):
+    df = df.copy()
+    numerical_cols = feature_store.get_numerical_cols() 
+    
+    iso_forest = IsolationForest(contamination=contamination)
+    preds = iso_forest.fit_predict(df[numerical_cols])
+
+    return df.loc[preds == 1]
+    
