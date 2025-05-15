@@ -1,4 +1,5 @@
 from lagerhaus.featuremanagement import FeatureStore
+import pandas as pd
 
 class FeatureView:
     """
@@ -26,11 +27,7 @@ class FeatureView:
         df = self.get_all_raw()
 
         for transformer in self.transformers:
-            print("before")
-            print(df.max())
             df = transformer(df, feature_view=self)
-            print("after")
-            print(df.max())
 
         return df
     
@@ -52,4 +49,25 @@ class FeatureView:
 
         if self.whitelist is not None:
             df = [col for col in df if col in self.whitelist]
+        return df
+
+    def featurize(self, df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Transform data for inference-use (live data).
+        """
+        cols = self.whitelist if self.whitelist is not None else self.feature_store.metadata.keys()
+        for col in cols:
+            met = self.feature_store.metadata[col]
+            if met.from_col is not None:
+                df[col] = df[met.from_col]
+                df.drop(met.from_col, axis=1, inplace=True)
+
+            if met.dtype is not None:
+                df[col] = df[col].astype(met.dtype)
+
+        if self.whitelist is not None:
+            df = df[self.whitelist]
+        for transformer in self.transformers:
+            df = transformer(df, feature_view=self)
+
         return df
