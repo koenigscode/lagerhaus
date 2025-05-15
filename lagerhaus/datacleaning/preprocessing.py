@@ -46,7 +46,7 @@ def one_hot_encode():
 def skew():
     def transform(df: pd.DataFrame, feature_store: FeatureStore):
         numerical_columns = df[feature_store.get_numerical_cols()]
-        pt = PowerTransformer()
+        pt = PowerTransformer(standardize=False) # use std() if needed
         return apply_transformation(df, numerical_columns, pt.fit_transform)
     return transform
 
