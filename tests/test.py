@@ -1,6 +1,8 @@
 import pandas as pd
-from feature_store import presets, stats, FeatureStore, FeatureView, FeatureMetadata
-from feature_store.preprocessing import skew, std
+from lagerhaus import stats
+from lagerhaus.featuremanagement import FeatureStore, FeatureView, FeatureMetadata
+from lagerhaus.datacleaning.preprocessing import skew, std
+from lagerhaus.datacleaning import presets
 
 # df = pd.read_csv("./tests/datasets/small_dataset.csv")
 df = pd.read_csv("./tests/datasets/student_habits_performance.csv")

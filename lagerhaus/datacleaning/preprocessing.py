@@ -1,20 +1,9 @@
 from sklearn.preprocessing import StandardScaler
 import pandas as pd
 from sklearn.preprocessing import OneHotEncoder
-from .core import FeatureStore
 from sklearn.preprocessing import PowerTransformer
-
-def apply_transformation(df: pd.DataFrame, columns: pd.DataFrame, transform_fn) -> pd.DataFrame:
-    """
-    Helper function for reducing duplicate code that merges transformed
-    dataframes back together.
-    """
-    transformed = transform_fn(columns)
-    transformed_df = pd.DataFrame(transformed, columns=columns.columns, index=df.index)
-    df = df.copy()
-    df.loc[:, columns.columns] = transformed_df
-    return df
-
+from .helpers import apply_transformation
+from lagerhaus.featuremanagement import FeatureStore
 
 def std(df: pd.DataFrame, feature_store: FeatureStore):
     numerical_columns = feature_store.get_numerical_cols()

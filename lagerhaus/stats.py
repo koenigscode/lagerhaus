@@ -1,6 +1,6 @@
 import streamlit as st
 import altair as alt
-from .core import FeatureStore, FeatureView
+from lagerhaus.featuremanagement import FeatureStore, FeatureView
 
 def init(title, feature_store: FeatureStore):
     with st.container(border=True):
