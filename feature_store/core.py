@@ -23,6 +23,11 @@ class FeatureStore:
     def get_all(self):
         return self.df
 
+    def get_numerical_cols(self):
+        return self.df.select_dtypes(include = ['number'])
+    def get_categorical_cols(self):
+        return [col for col, metadata in self.metadata.items() if metadata.categorical]
+
 
 class FeatureView:
     """
