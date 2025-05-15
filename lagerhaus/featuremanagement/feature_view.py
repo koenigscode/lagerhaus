@@ -28,6 +28,10 @@ class FeatureView:
             df = df[self.whitelist]
 
         for transformer in self.transformers:
+            print("before")
+            print(df.max())
             df = transformer(df, feature_store=self.feature_store)
+            print("after")
+            print(df.max())
 
         return df

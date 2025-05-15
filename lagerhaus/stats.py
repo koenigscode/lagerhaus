@@ -6,7 +6,7 @@ def init(title, feature_store: FeatureStore):
     with st.container(border=True):
         st.title(title)
         st.write("Feature Store Stats:")
-        st.write(feature_store.get_all().describe(include="all"))
+        st.write(feature_store.get_all().describe())
 
 
 def print(obj, title=None):
