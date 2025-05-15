@@ -16,7 +16,7 @@ metadata = {
 
 fs = FeatureStore(metadata=metadata, df=df)
 
-linear_fv = FeatureView(feature_store=fs, transformers=[skew, std])
+linear_fv = FeatureView(feature_store=fs, transformers=presets.linear_regression)
 decision_tree_fv = FeatureView(feature_store=fs, transformers=presets.decision_tree)
 
 stats.init("Student Habits Performance", fs)

@@ -1,4 +1,4 @@
-from lagerhaus.featuremanagement.feature_metadata import FeatureMetadata
+from .feature_metadata import FeatureMetadata
 import pandas as pd
 
 class FeatureStore:
@@ -17,7 +17,7 @@ class FeatureStore:
     def get_all(self):
         return self.df
 
-    def get_numerical_cols(self):
-        return self.df.select_dtypes(include = ['number'])
-    def get_categorical_cols(self):
+    def get_numerical_cols(self) -> list[str]:
+        return self.df.select_dtypes(include = ['number']).columns
+    def get_categorical_cols(self) -> list[str]:
         return [col for col, metadata in self.metadata.items() if metadata.categorical]
