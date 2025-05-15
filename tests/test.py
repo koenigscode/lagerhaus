@@ -23,9 +23,9 @@ decision_tree_fv = FeatureView(feature_store=fs, transformers=presets.decision_t
 stats.init("Student Habits Performance", fs)
 stats.print(fs, title="Feature Store")
 stats.print(linear_fv, title="Feature View for Linear Regression")
-stats.print(decision_tree_fv, title="Feature View for Decision Tree")
+# stats.print(decision_tree_fv, title="Feature View for Decision Tree")
 
-# stats.plot_distribution(fs.get_all(), "age", title="Age distribution in Feature Store")
+stats.plot_distribution(fs.get_all(), "age", title="Age distribution in Feature Store")
 # stats.plot_distribution(linear_fv.get_all(), "age", title="Age distribution in Feature View for Linear Regression")
 # stats.plot_distribution(fs.get_all(), "exam_score", title="Exam Score distribution in Feature Store",)
 # stats.plot_distribution(linear_fv.get_all(), "exam_score", title="Exam Score distribution in Feature View for Linear Regression",)

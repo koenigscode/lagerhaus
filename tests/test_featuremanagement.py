@@ -14,5 +14,4 @@ def test_whitelist():
     }
     fs = FeatureStore(metadata=metadata, df=df)
     fv = FeatureView(feature_store=fs, transformers=presets.linear_regression, whitelist=["id", "age"])
-    print(fv.get_all())
     assert len(fv.get_all().columns) == 2
