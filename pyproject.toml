@@ -1,0 +1,14 @@
+[project]
+name = "lagerhaus"
+version = "0.1.0"
+dependencies = [
+    "pandas",
+    "scikit-learn",
+    "pydantic",
+    "altair",
+    "streamlit"
+]
+
+[build-system]
+requires = ["setuptools >= 77.0.3"]
+build-backend = "setuptools.build_meta"
