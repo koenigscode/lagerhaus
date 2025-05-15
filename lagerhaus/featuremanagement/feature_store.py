@@ -24,8 +24,3 @@ class FeatureStore:
 
     def get_all(self):
         return self.df
-
-    def get_numerical_cols(self) -> list[str]:
-        return self.df.select_dtypes(include = ['number']).columns
-    def get_categorical_cols(self) -> list[str]:
-        return [col for col, metadata in self.metadata.items() if metadata.categorical]

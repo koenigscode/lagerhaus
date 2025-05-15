@@ -3,21 +3,21 @@ import pandas as pd
 from sklearn.preprocessing import PowerTransformer
 from sklearn.ensemble import IsolationForest
 from .helpers import apply_transformation
-from lagerhaus.featuremanagement import FeatureStore
+from lagerhaus.featuremanagement import FeatureStore, FeatureView
 import numpy as np
 
 def std():
-    def transform(df: pd.DataFrame, feature_store: FeatureStore):
-        numerical_columns = df[feature_store.get_numerical_cols()]
+    def transform(df: pd.DataFrame, feature_view: FeatureView):
+        numerical_columns = df[feature_view.get_numerical_cols()]
         scaler = StandardScaler()
         return apply_transformation(df, numerical_columns, scaler.fit_transform)
     return transform
 
 # TODO: fill other values than numbers too?
 def fill_na(strategy="mean"):
-    def transform(df: pd.DataFrame, feature_store: FeatureStore):
+    def transform(df: pd.DataFrame, feature_view: FeatureView):
         df = df.copy()
-        numerical_columns = df[feature_store.get_numerical_cols()]
+        numerical_columns = df[feature_view.get_numerical_cols()]
 
         if strategy == "mean":
             num_df = numerical_columns.fillna(numerical_columns.mean())
@@ -32,9 +32,9 @@ def fill_na(strategy="mean"):
     return transform
 
 def one_hot_encode():
-    def transform(df: pd.DataFrame, feature_store: FeatureStore):
+    def transform(df: pd.DataFrame, feature_view: FeatureView):
         df = df.copy()
-        categorical_columns = df[feature_store.get_categorical_cols()]
+        categorical_columns = df[feature_view.get_categorical_cols()]
         encoder = OneHotEncoder()
         transformed = encoder.fit_transform(categorical_columns)
         encoded_df = pd.DataFrame(transformed.toarray(), columns=encoder.get_feature_names_out(), index=df.index)
@@ -44,15 +44,15 @@ def one_hot_encode():
     return transform
 
 def skew():
-    def transform(df: pd.DataFrame, feature_store: FeatureStore):
-        numerical_columns = df[feature_store.get_numerical_cols()]
+    def transform(df: pd.DataFrame, feature_view: FeatureView):
+        numerical_columns = df[feature_view.get_numerical_cols()]
         pt = PowerTransformer(standardize=False) # use std() if needed
         return apply_transformation(df, numerical_columns, pt.fit_transform)
     return transform
 
 def remove_correlated_features():
-    def transform(df: pd.DataFrame, feature_store: FeatureStore):
-        numerical_columns = df[feature_store.get_numerical_cols()]
+    def transform(df: pd.DataFrame, feature_view: FeatureView):
+        numerical_columns = df[feature_view.get_numerical_cols()]
         corr_matrix = numerical_columns.corr().abs()
 
         # gets rid of duplicates, since the matrix has every correlation twice
@@ -65,9 +65,9 @@ def remove_correlated_features():
     return transform
 
 def remove_outliers(contamination=0.05):
-    def transform(df: pd.DataFrame, feature_store: FeatureStore):
+    def transform(df: pd.DataFrame, feature_view: FeatureView):
         df = df.copy()
-        numerical_cols = df[feature_store.get_numerical_cols()]
+        numerical_cols = df[feature_view.get_numerical_cols()]
         
         iso_forest = IsolationForest(contamination=contamination)
         preds = iso_forest.fit_predict(numerical_cols)
