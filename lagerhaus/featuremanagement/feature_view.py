@@ -1,5 +1,6 @@
 from lagerhaus.featuremanagement import FeatureStore
 import pandas as pd
+from sklearn.model_selection import train_test_split
 
 class FeatureView:
     """
@@ -50,7 +51,7 @@ class FeatureView:
         if self.whitelist is not None:
             df = [col for col in df if col in self.whitelist]
         return df
-
+    
     def featurize(self, df: pd.DataFrame) -> pd.DataFrame:
         """
         Transform data for inference-use (live data).
@@ -71,3 +72,9 @@ class FeatureView:
             df = transformer(df, feature_view=self)
 
         return df
+
+    def get_train_test_split(self, test_size: float = 0.2, random_state: int = 0, y: [str] = None) -> tuple[pd.DataFrame, pd.DataFrame]:
+        df = self.get_all()
+        X = df.drop(y, axis=1)
+        y = df[y]
+        return train_test_split(X, y, test_size=test_size, random_state=random_state)
